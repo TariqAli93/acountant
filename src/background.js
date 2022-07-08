@@ -3,12 +3,21 @@
 import { app, protocol, BrowserWindow, globalShortcut } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import { autoUpdater } from "electron-updater"
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: false, standard: true, stream: true } },
 ]);
+
+autoUpdater.setFeedURL({
+  provider: "github",
+  owner: "TariqAli93",
+  repo: "acountant",
+  release: "latest",
+  token: process.env.GH_TOKEN,
+})
 
 let win;
 let splash;
@@ -30,6 +39,7 @@ async function createWindow() {
 
   win.setMenu(null);
 
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
@@ -38,6 +48,7 @@ async function createWindow() {
     createProtocol("app");
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
+    autoUpdater.checkForUpdatesAndNotify()
   }
 }
 
@@ -93,7 +104,7 @@ app.on("ready", async (event) => {
   createSplash()
   createWindow()
 
-  
+
 
   if (event.sender.isReady) {
     setTimeout(() => {
