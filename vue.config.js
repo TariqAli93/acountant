@@ -17,7 +17,12 @@ module.exports = {
         appId: "com.codel.accountant",
         productName: "برنامج امين الصندوق",
         extraResources: ['./src/accountant.db', './node_modules/roboto-fontface/*', './node_modules/material-design-icons-iconfont/dist/*'],
-        publish: ['github'],
+        publish: {
+          provider: "github",
+          owner: "TariqAli93",
+          repo: "acountant",
+          token: "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",
+        },
 
         win: {
           target: 'nsis',

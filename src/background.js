@@ -11,14 +11,6 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: false, standard: true, stream: true } },
 ]);
 
-autoUpdater.setFeedURL({
-  provider: "github",
-  owner: "TariqAli93",
-  repo: "acountant",
-  release: "latest",
-  token: process.env.GH_TOKEN,
-})
-
 let win;
 let splash;
 async function createWindow() {
