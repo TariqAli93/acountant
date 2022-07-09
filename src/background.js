@@ -3,7 +3,6 @@
 import { app, protocol, BrowserWindow, globalShortcut, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
-import { autoUpdater } from "electron-updater"
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Scheme must be registered before the app is ready
@@ -11,44 +10,8 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: false, standard: true, stream: true } },
 ]);
 
-Object.defineProperty(app, 'isPackaged', {
-  get() {
-    return true;
-  }
-});
-
 let win;
 let splash;
-
-setInterval(() => {
-  autoUpdater.checkForUpdates()
-}, 6000)
-
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: ['Restart', 'Later'],
-    title: 'Application Update',
-    message: process.platform === 'win32' ? releaseNotes : releaseName,
-    detail:
-      'A new version has been downloaded. Restart the application to apply the updates.',
-  }
-
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall()
-  })
-})
-
-autoUpdater.on('error', (message) => {
-  console.error('There was a problem updating the application')
-  console.error(message)
-})
-
-autoUpdater.on('update-available', (event) => {
-  console.log('Checking for update...')
-  win.webContents.send('checking-for-update')
-})
-
 
 async function createWindow() {
   // Create the browser window.
@@ -102,6 +65,8 @@ app.on("window-all-closed", () => {
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
     app.quit();
+    win = null;
+    splash = null;
   }
 });
 
@@ -138,6 +103,7 @@ app.on("ready", async (event) => {
     setTimeout(() => {
       win.show()
       splash.close()
+      splash = null
     }, 4500)
   }
 });
