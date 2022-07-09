@@ -15,7 +15,7 @@
           @submit.prevent="upsertAccount"
         >
           <v-row>
-            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
               <v-text-field
                 outlined
                 color="secondary"
@@ -26,7 +26,7 @@
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
               <v-text-field
                 outlined
                 color="secondary"
@@ -36,6 +36,19 @@
                 v-model="account.amount"
                 type="number"
               ></v-text-field>
+            </v-col>
+
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+              <v-select
+                :items="account_type"
+                outlined
+                color="secondary"
+                label="نوع الحساب"
+                placeholder="نوع الحساب"
+                v-model="account.accountType"
+                type="number"
+                item-color="secondary"
+              ></v-select>
             </v-col>
           </v-row>
 
@@ -69,6 +82,10 @@
               <v-icon @click="editAccount(item)">edit</v-icon>
             </v-btn>
           </template>
+
+          <template #[`item.isDefault`]="{ item }">
+            <v-chip>{{ item.isDefault === 1 ? 'حساب اساسي' : 'حساب فرعي' }}</v-chip>
+          </template>
         </v-data-table>
 
         <v-divider />
@@ -98,15 +115,21 @@ export default {
       name: "",
       amount: "",
       accountId: "",
+      accountType: 0,
       type: 1, // 1 is create || 2 is update
       valid: false,
     },
+    account_type: [
+      { text: "حساب اساسي", value: 1 },
+      { text: "حساب فرعي", value: 0 },
+    ],
     rules: [(v) => !!v || "الرجاء ادخال البيانات"],
     accounts: [],
     headers: [
       { text: "رقم الحساب", value: "accountId" },
       { text: "اسم الحساب", value: "accountName" },
       { text: "المبلغ", value: "amount" },
+      { text: "نوع الحساب", value: "isDefault" },
       { text: "الاجرائات", value: "actions" },
     ],
   }),
@@ -142,6 +165,7 @@ export default {
               userId: this.userId,
               accountName: this.account.name,
               amount: this.account.amount,
+              isDefault: this.account.accountType,
             });
             this.account.type = 1;
             this.account.name = "";
@@ -156,6 +180,7 @@ export default {
               accountId: this.account.accountId,
               accountName: this.account.name,
               amount: this.account.amount,
+              isDefault: this.account.accountType,
             });
             this.getAccounts();
             this.clearAccount();
@@ -186,6 +211,7 @@ export default {
       this.account.name = account.accountName;
       this.account.amount = account.amount;
       this.account.accountId = account.accountId;
+      this.account.accountType = account.isDefault;
       this.$vuetify.goTo(0);
     },
 

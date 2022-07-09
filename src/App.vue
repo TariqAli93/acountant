@@ -1,102 +1,109 @@
 <template>
-  <v-app>
-    <v-layout v-if="loading" class="loading" justify-center align-center>
-      <v-progress-circular indeterminate color="primary"> </v-progress-circular>
-    </v-layout>
+  <div>
+    <appTitle />
+    <v-app>
+      <v-layout v-if="loading" class="loading" justify-center align-center>
+        <v-progress-circular indeterminate color="primary">
+        </v-progress-circular>
+      </v-layout>
 
-    <v-navigation-drawer
-      app
-      color="primary"
-      permanent
-      right
-      width="200"
-      v-if="isLoggedIn"
-    >
-      <v-list nav dense class="transparent">
-        <v-list-item>
-          <v-list-item-icon>
-            <v-icon>face</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>{{ userName }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
+      <v-navigation-drawer
+        app
+        color="primary"
+        permanent
+        right
+        width="200"
+        v-if="isLoggedIn"
+        style="top: 36px"
+      >
+        <v-list nav dense class="transparent">
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>face</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>{{ userName }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
 
-      <v-divider />
+        <v-divider />
 
-      <v-list nav dense class="transparent">
-        <v-list-item to="/">
-          <v-list-item-icon>
-            <v-icon>account_balance_wallet</v-icon>
-          </v-list-item-icon>
+        <v-list nav dense class="transparent">
+          <v-list-item to="/">
+            <v-list-item-icon>
+              <v-icon>account_balance_wallet</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>الصندوق</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>الصندوق</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-        <v-list-item to="/transaction">
-          <v-list-item-icon>
-            <v-icon>receipt_long</v-icon>
-          </v-list-item-icon>
+          <v-list-item to="/transaction">
+            <v-list-item-icon>
+              <v-icon>receipt_long</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>الكشوفات اليوميه</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>الكشوفات اليوميه</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-        <v-list-item to="/customers">
-          <v-list-item-icon>
-            <v-icon>group_add</v-icon>
-          </v-list-item-icon>
+          <v-list-item to="/customers">
+            <v-list-item-icon>
+              <v-icon>group_add</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>العملاء</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>العملاء</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-        <v-list-item to="/accounts">
-          <v-list-item-icon>
-            <v-icon>account_balance</v-icon>
-          </v-list-item-icon>
+          <v-list-item to="/accounts">
+            <v-list-item-icon>
+              <v-icon>account_balance</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>حسابات القاصة</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+            <v-list-item-content>
+              <v-list-item-title>حسابات القاصة</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
 
-      <template #append>
-        <div class="pb-10">
-          <v-btn
-            depressed
-            class="mx-auto d-block"
-            color="error"
-            @click="$store.dispatch('logout')"
-          >
-            <v-icon color="white" class="ml-3">logout</v-icon>
-            <span class="white--text">تسجيل الخروج</span>
-          </v-btn>
-        </div>
-      </template>
-    </v-navigation-drawer>
+        <template #append>
+          <div style="padding-bottom: 5rem">
+            <v-btn
+              depressed
+              class="mx-auto d-block"
+              color="error"
+              @click="$store.dispatch('logout')"
+            >
+              <v-icon color="white" class="ml-3">logout</v-icon>
+              <span class="white--text">تسجيل الخروج</span>
+            </v-btn>
+          </div>
+        </template>
+      </v-navigation-drawer>
 
-    <v-main v-if="isLoggedIn">
-      <v-container>
-        <router-view />
-      </v-container>
-    </v-main>
+      <v-main v-if="isLoggedIn">
+        <v-container>
+          <router-view />
+        </v-container>
+      </v-main>
 
-    <login v-if="!isLoggedIn" />
-  </v-app>
+      <login v-if="!isLoggedIn" />
+    </v-app>
+  </div>
 </template>
 
 <script>
 import login from "@/components/login/login.vue";
 import { bus } from "@/plugins/bus";
+import appTitle from "@/components/title/appTitle.vue";
 export default {
   name: "App",
   components: {
     login,
+    appTitle,
   },
   data: () => ({
     loading: false,
@@ -125,6 +132,30 @@ export default {
 <style lang="scss">
 @import url("./assets/fonts/style.css");
 @import url("./assets/material-design-icons-iconfont/dist/material-design-icons.css");
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d6d6d6 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #d6d6d6;
+  border-radius: 9px;
+  border: 4px solid #ffffff;
+}
+.v-application {
+  padding-top: 45px;
+}
 
 html,
 body,

@@ -12,7 +12,7 @@ export const GetAccount = () => {
 
 export const CreateAccount = (account) => {
     return new Promise((resolve, reject) => {
-        db.insert({ accountName: account.accountName, amount: account.amount, userId: account.userId }).into('account').then(data => {
+        db.insert({ accountName: account.accountName, amount: account.amount, userId: account.userId, isDefault: account.isDefault }).into('account').then(data => {
             resolve(data)
         }).catch(err => {
             reject(err)
@@ -25,7 +25,8 @@ export const UpdateAccount = (account) => {
         db('account').update({
             accountName: account.accountName,
             amount: account.amount,
-            userId: account.userId
+            userId: account.userId,
+            isDefault: account.isDefault
         }).where('accountId', account.accountId).then(data => {
             resolve(data)
         }).catch(err => {

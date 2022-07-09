@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "deploy": "git add . && git commit -m'edit app title bar & add activites date' && git push && yarn electron:build",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
@@ -13,6 +14,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@vscode/codicons": "^0.0.31",
     "better-sqlite3": "^7.5.3",
     "chmodr": "^1.2.0",
     "core-js": "^3.8.3",

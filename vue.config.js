@@ -16,7 +16,7 @@ module.exports = {
       builderOptions: {
         appId: "com.codel.accountant",
         productName: "برنامج امين الصندوق",
-        extraResources: ['./src/accountant.db', './node_modules/roboto-fontface/*', './node_modules/material-design-icons-iconfont/dist/*'],
+        extraResources: ['./src/accountant.db', './node_modules/roboto-fontface/*', './node_modules/material-design-icons-iconfont/dist/*', './node_modules/@vscode/codicons/dist/*'],
         publish: {
           provider: "github",
           owner: "TariqAli93",

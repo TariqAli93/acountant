@@ -1525,6 +1525,11 @@
   dependencies:
     "@types/yargs-parser" "*"
 
+"@vscode/codicons@^0.0.31":
+  "integrity" "sha512-fldpXy7pHsQAMlU1pnGI23ypQ6xLk5u6SiABMFoAmlj4f2MR0iwg7C19IB1xvAEGG+dkxOfRSrbKF8ry7QqGQA=="
+  "resolved" "https://registry.npmjs.org/@vscode/codicons/-/codicons-0.0.31.tgz"
+  "version" "0.0.31"
+
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   "integrity" "sha512-QOi5OW45e2R20VygMSNhyQHvpdUwQZqGPc748JLGCYEy+yp8fNFNdbNIGAgZmi9e+2JHPd6i6idRuqivyicIkA=="
   "resolved" "https://registry.npmjs.org/@vue/babel-helper-vue-jsx-merge-props/-/babel-helper-vue-jsx-merge-props-1.2.1.tgz"

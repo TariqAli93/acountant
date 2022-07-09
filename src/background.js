@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, globalShortcut, dialog } from "electron";
+import { app, protocol, BrowserWindow, globalShortcut, ipcMain, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -21,6 +21,7 @@ async function createWindow() {
     minHeight: 800,
     minWidth: 700,
     show: false,
+    frame: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -30,7 +31,45 @@ async function createWindow() {
   });
 
   win.setMenu(null);
+  win.setTitle('برنامج امين الصندوق')
+  win.setIcon(__static + '/icons/icon.ico')
+  win.maximize();
 
+  win.on('maximize', () => {
+    win.webContents.send('maximize', true)
+  })
+
+  win.on('unmaximize', () => {
+    win.webContents.send('maximize', false)
+  })
+
+  ipcMain.on('maximize', () => {
+    win.maximize()
+  });
+
+  ipcMain.on('restore', () => {
+    win.unmaximize()
+  });
+
+  ipcMain.on('minimize', () => {
+    win.minimize()
+  })
+
+  ipcMain.on('quit', () => {
+    const dialogOpts = {
+      type: 'warning',
+      buttons: ['إلغاء', 'خروج'],
+      title: 'خروج',
+      message: 'هل أنت متأكد من أنك تريد إغلاق البرنامج؟',
+      detail: 'سيتم إغلاق البرنامج بعد الضغط على زر الخروج',
+    }
+
+    dialog.showMessageBox(dialogOpts).then(returnValue => {
+      if (returnValue.response === 1) {
+        app.quit()
+      }
+    });
+  })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -64,11 +103,11 @@ app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
-    app.quit();
-    win = null;
-    splash = null;
+    app.quit()
   }
 });
+
+
 
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
@@ -103,7 +142,6 @@ app.on("ready", async (event) => {
     setTimeout(() => {
       win.show()
       splash.close()
-      splash = null
     }, 4500)
   }
 });

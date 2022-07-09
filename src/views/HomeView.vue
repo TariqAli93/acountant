@@ -95,7 +95,7 @@ export default {
         });
 
         localStorage.removeItem("selectedAccount");
-        this.$store.dispatch('setSelectedAccount', newAccount[0]);
+        this.$store.dispatch("setSelectedAccount", newAccount[0]);
       });
     });
 
@@ -107,7 +107,7 @@ export default {
         });
 
         localStorage.removeItem("selectedAccount");
-        this.$store.dispatch('setSelectedAccount', newAccount[0]);
+        this.$store.dispatch("setSelectedAccount", newAccount[0]);
       });
     });
 
@@ -119,6 +119,15 @@ export default {
     async getAccounts() {
       try {
         const account = await GetAccount();
+        // select default account
+        if (account.length > 0) {
+          const defaultAccount = account.filter((account) => {
+            return account.isDefault === 1;
+          });
+
+          this.$store.dispatch("setSelectedAccount", defaultAccount[0]);
+          console.log(defaultAccount[0]);
+        }
         this.accounts = account;
       } catch (error) {
         console.error(error);

@@ -11,6 +11,7 @@
       </v-btn>
     </v-toolbar>
 
+    <!-- withdraw and deposit components -->
     <v-row class="mb-10">
       <v-col cols="12" sm="12" md="6" lg="6" xl="6">
         <v-card elevation="1">
@@ -40,7 +41,9 @@
         </v-card>
       </v-col>
     </v-row>
+    <!-- withdraw and deposit components -->
 
+    <!-- create customer activites -->
     <v-card elevation="1" class="mb-10">
       <v-toolbar color="primary" dense flat elevation="0">
         <v-toolbar-title>اضافة كشف للعميل</v-toolbar-title>
@@ -94,7 +97,7 @@
               ></v-select>
             </v-col>
 
-            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
               <v-select
                 :items="activitieTypes"
                 item-color="secondary"
@@ -107,7 +110,44 @@
               ></v-select>
             </v-col>
 
-            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="customerTrans.createdAt"
+                    outlined
+                    color="secondary"
+                    label="تاريخ الحركة"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                color="secondary"
+                  v-model="customerTrans.createdAt"
+                  :active-picker.sync="activePicker"
+                  :max="
+                    new Date(
+                      Date.now() - new Date().getTimezoneOffset() * 60000
+                    )
+                      .toISOString()
+                      .substr(0, 10)
+                  "
+                  min="1950-01-01"
+                  @change="save"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
               <v-select
                 :items="accounts"
                 item-text="accountName"
@@ -138,7 +178,9 @@
         </v-form>
       </v-container>
     </v-card>
+    <!-- create customer activites -->
 
+    <!-- customer activites list -->
     <v-card elevation="1">
       <v-toolbar color="primary" dense flat elevation="0">
         <v-toolbar-title style="width: 160px"
@@ -171,6 +213,7 @@
         </template>
       </v-data-table>
     </v-card>
+    <!-- customer activites list -->
   </div>
 </template>
 
@@ -214,7 +257,7 @@ export default {
       amount: 0,
       note: "لا يوجد ملاحظات",
       accountId: null,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString().split("T")[0],
       valid: false,
     },
     headers: [
@@ -226,11 +269,20 @@ export default {
       { text: "العميل", value: "customerName" },
       { text: "الحساب", value: "accountName" },
     ],
+
+    activePicker: null,
+    menu: false,
   }),
   filters: {
     formatDate(value) {
       if (!value) return "";
       return moment(value).format("YYYY-MM-DD HH:mm:ss A");
+    },
+  },
+
+  watch: {
+    menu(val) {
+      val && setTimeout(() => (this.activePicker = "YEAR"));
     },
   },
 
@@ -240,13 +292,15 @@ export default {
         this.transactions.length > 0
           ? this.transactions[0].customerAmount * 1
           : 0;
-      return amount < 0
-        ? `مطلوب ${amount}`
-        : `يطلب ${amount}`;
+      return amount < 0 ? `مطلوب ${amount}` : `يطلب ${amount}`;
     },
   },
 
   methods: {
+    save(date) {
+      this.$refs.menu.save(date);
+    },
+
     async getActivities() {
       try {
         const activities = await GetActivitiesByCustomer(this.$route.params.id);
@@ -291,7 +345,10 @@ export default {
             accountId: this.customerTrans.accountId,
             createdAt: this.customerTrans.createdAt,
           };
-          const activities = await createActivities(activitiesData);
+
+          console.log(activitiesData)
+          await createActivities(activitiesData);
+
           if (this.customerTrans.activitieType === 1) {
             await DecrementCustomerBalance({
               customerId: this.$route.params.id,
@@ -305,7 +362,6 @@ export default {
           }
 
           this.getActivities();
-          console.log(activities);
         }
       } catch (error) {
         console.error(error);
