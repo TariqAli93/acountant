@@ -23,23 +23,25 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
+import { ipcRenderer, remote } from "electron";
 export default {
   data: () => ({
     title: "برنامج امين الصندوق",
     isMaximized: true,
   }),
 
-  mounted() {
-    ipcRenderer.on("maximize", (event, arg) => {
-      this.isMaximized = arg;
-    });
-  },
-
   computed: {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     },
+  },
+
+  mounted() {
+    ipcRenderer.on("maximize", (event, arg) => {
+      this.isMaximized = arg;
+    });
+
+    this.isMaximized = remote.getCurrentWindow().isMaximized();
   },
 
   methods: {
@@ -63,7 +65,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import url("../../../node_modules/@vscode/codicons/dist/codicon.css");
 .custome-title {
   position: fixed;
   top: 0;
@@ -77,9 +78,11 @@ export default {
   background-color: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   -webkit-app-region: drag;
+  color: white;
 
   &.no-transparent {
     background-color: #fff;
+    color: var(--v-secondary-base);
   }
 
   .custome-title-icon {
@@ -90,7 +93,6 @@ export default {
     h1 {
       font-size: 0.5rem;
       font-weight: bold;
-      color: #000;
     }
 
     img {

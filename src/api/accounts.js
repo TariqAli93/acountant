@@ -2,7 +2,7 @@ import db from '../config'
 
 export const GetAccount = () => {
     return new Promise((resolve, reject) => {
-        db.select().table('account').then(data => {
+        db.select().table('account').where('isDeleted', 0).then(data => {
             resolve(data)
         }).catch(err => {
             reject(err)
@@ -12,11 +12,20 @@ export const GetAccount = () => {
 
 export const CreateAccount = (account) => {
     return new Promise((resolve, reject) => {
-        db.insert({ accountName: account.accountName, amount: account.amount, userId: account.userId, isDefault: account.isDefault }).into('account').then(data => {
-            resolve(data)
-        }).catch(err => {
-            reject(err)
+        db.select().table('account').where('isDefault', 1).where('isDeleted', 0).then(data => {
+            if (data.length > 0 && account.isDefault === 1) {
+                reject('الحساب الاساسي موجود بالفعل')
+            } else {
+                db.insert({ accountName: account.accountName, amount: account.amount, userId: account.userId, isDefault: account.isDefault })
+                    .into('account')
+                    .then(data => {
+                        resolve(data)
+                    }).catch(err => {
+                        reject(err)
+                    })
+            }
         })
+
     })
 }
 
@@ -32,6 +41,19 @@ export const UpdateAccount = (account) => {
         }).catch(err => {
             reject(err)
         })
+    })
+}
+
+export const DeleteAccount = (account) => {
+    console.log(account)
+    return new Promise((resolve, reject) => {
+        db('account').update('isDeleted', 1)
+            .where('accountId', account)
+            .then(data => {
+                resolve(data)
+            }).catch(err => {
+                reject(err)
+            })
     })
 }
 

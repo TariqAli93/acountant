@@ -73,7 +73,6 @@ export default {
       bus.$emit("loading-start");
       try {
         const user = await Login(this.userName, this.password);
-        console.log(user);
         this.$store.dispatch("login", user);
         bus.$emit("loading-end");
       } catch (error) {

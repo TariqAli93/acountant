@@ -81,10 +81,16 @@
             <v-btn icon>
               <v-icon @click="editAccount(item)">edit</v-icon>
             </v-btn>
+
+            <v-btn icon>
+              <v-icon @click="deleteAccount(item)">delete</v-icon>
+            </v-btn>
           </template>
 
           <template #[`item.isDefault`]="{ item }">
-            <v-chip>{{ item.isDefault === 1 ? 'حساب اساسي' : 'حساب فرعي' }}</v-chip>
+            <v-chip>{{
+              item.isDefault === 1 ? "حساب اساسي" : "حساب فرعي"
+            }}</v-chip>
           </template>
         </v-data-table>
 
@@ -107,8 +113,15 @@
 </template>
 
 <script>
-import { CreateAccount, UpdateAccount, GetAccount } from "@/api/accounts";
+import {
+  CreateAccount,
+  UpdateAccount,
+  GetAccount,
+  DeleteAccount,
+} from "@/api/accounts";
+
 import tafqeet from "@/plugins/tafqeet";
+import { truncateSync } from "original-fs";
 export default {
   data: () => ({
     account: {
@@ -125,6 +138,7 @@ export default {
     ],
     rules: [(v) => !!v || "الرجاء ادخال البيانات"],
     accounts: [],
+    customers: [],
     headers: [
       { text: "رقم الحساب", value: "accountId" },
       { text: "اسم الحساب", value: "accountName" },
@@ -191,10 +205,12 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
+        this.$toasted.error(e, {
+          duration: 5000,
+          position: "top-center",
+        });
       }
-
-      console.log(this.account.type);
     },
 
     async getAccounts() {
@@ -213,6 +229,24 @@ export default {
       this.account.accountId = account.accountId;
       this.account.accountType = account.isDefault;
       this.$vuetify.goTo(0);
+    },
+
+    async deleteAccount(account) {
+      console.log(account)
+      try {
+        await DeleteAccount(account.accountId);
+        this.getAccounts();
+        this.$toasted.success("تم حذف الحساب بنجاح", {
+          position: "top-center",
+          duration: 5000,
+        });
+      } catch (e) {
+        console.error(e);
+        this.$toasted.error(e, {
+          duration: 5000,
+          position: "top-center",
+        });
+      }
     },
 
     clearAccount() {

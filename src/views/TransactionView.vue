@@ -8,7 +8,7 @@
       <v-container>
         <v-form ref="filRef" lazy-validation @submit.prevent="filterActivites">
           <v-row>
-            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
               <v-select
                 v-model="activitieType"
                 :items="activitieTypes"
@@ -20,7 +20,21 @@
               ></v-select>
             </v-col>
 
-            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+              <v-select
+                v-model="customerId"
+                :items="customers"
+                item-text="customerName"
+                item-value="customerId"
+                outlined
+                label="العميل"
+                color="secondary"
+                item-color="secondary"
+                clearable
+              ></v-select>
+            </v-col>
+
+            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
               <v-menu
                 ref="menu1"
                 v-model="menu1"
@@ -36,7 +50,6 @@
                     label="من تاريخ..."
                     placeholder="من"
                     persistent-placeholder
-                    prepend-icon="date_range"
                     readonly
                     v-bind="attrs"
                     v-on="on"
@@ -62,7 +75,7 @@
               </v-menu>
             </v-col>
 
-            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
               <v-menu
                 ref="menu2"
                 v-model="menu2"
@@ -78,7 +91,6 @@
                     label="الى تاريخ ..."
                     placeholder="الى"
                     persistent-placeholder
-                    prepend-icon="date_range"
                     readonly
                     v-bind="attrs"
                     v-on="on"
@@ -144,6 +156,7 @@
 
 <script>
 import { GetActivities, GetActivitiesByQuery } from "@/api/activities";
+import { GetCustomers } from "@/api/customers";
 import exportExcel from "@/plugins/excel.js";
 import moment from "moment";
 export default {
@@ -167,6 +180,8 @@ export default {
     activitieType: "",
     menu1: false,
     menu2: false,
+    customers: [],
+    customerId: "",
     activePicker: null,
 
     rules: [(v) => !!v || "التاريخ مطلوب"],
@@ -191,6 +206,7 @@ export default {
 
   mounted() {
     this.getTransactions();
+    this.getCustomers();
   },
 
   methods: {
@@ -222,10 +238,20 @@ export default {
             startDate: this.date1,
             endDate: this.date2,
             activitieType: this.activitieType,
+            customerId: this.customerId,
           };
           const transaction = await GetActivitiesByQuery(query);
           this.transactions = transaction;
         }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async getCustomers() {
+      try {
+        const customers = await GetCustomers();
+        this.customers = customers;
       } catch (error) {
         console.error(error);
       }

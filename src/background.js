@@ -20,13 +20,14 @@ async function createWindow() {
     height: 800,
     minHeight: 800,
     minWidth: 700,
-    show: false,
     frame: false,
+    show: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      enableRemoteModule: true,
     },
   });
 
@@ -118,7 +119,7 @@ app.on("activate", () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", async (event) => {
+app.on("ready", async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
@@ -134,16 +135,12 @@ app.on("ready", async (event) => {
   })
 
   createSplash()
-  createWindow()
 
-
-
-  if (event.sender.isReady) {
-    setTimeout(() => {
-      win.show()
-      splash.close()
-    }, 4500)
-  }
+  setTimeout(() => {
+    createWindow()
+    win.show()
+    splash.close()
+  }, 4500)
 });
 
 // Exit cleanly on request from parent process in development mode.

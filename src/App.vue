@@ -132,6 +132,7 @@ export default {
 <style lang="scss">
 @import url("./assets/fonts/style.css");
 @import url("./assets/material-design-icons-iconfont/dist/material-design-icons.css");
+@import url("../node_modules/@vscode/codicons/dist/codicon.css");
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
 * {

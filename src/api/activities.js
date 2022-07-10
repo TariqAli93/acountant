@@ -52,6 +52,10 @@ export const GetActivitiesByQuery = (query) => {
       Query.where('activities.activitieType', query.activitieType)
     }
 
+    if (query.customerId) {
+      Query.where('activities.customerId', query.customerId)
+    }
+
     if (query.startDate && query.endDate) {
       Query.whereBetween('activities.createdAt', [query.startDate, query.endDate])
     }

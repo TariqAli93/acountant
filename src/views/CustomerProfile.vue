@@ -261,6 +261,7 @@ export default {
       valid: false,
     },
     headers: [
+      { text: "رقم الحركة", value: "activitieId" },
       { text: "نوع الحركة", value: "activitieType" },
       { text: "تاريخ الحركة", value: "createdAt" },
       { text: "المبلغ", value: "amount" },
