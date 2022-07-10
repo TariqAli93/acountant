@@ -8,7 +8,7 @@
       <v-container>
         <v-form ref="filRef" lazy-validation @submit.prevent="filterActivites">
           <v-row>
-            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
               <v-select
                 v-model="activitieType"
                 :items="activitieTypes"
@@ -20,7 +20,7 @@
               ></v-select>
             </v-col>
 
-            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
               <v-select
                 v-model="customerId"
                 :items="customers"
@@ -28,6 +28,20 @@
                 item-value="customerId"
                 outlined
                 label="العميل"
+                color="secondary"
+                item-color="secondary"
+                clearable
+              ></v-select>
+            </v-col>
+
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+              <v-select
+                v-model="accountId"
+                :items="accounts"
+                item-text="accountName"
+                item-value="accountId"
+                outlined
+                label="الحساب"
                 color="secondary"
                 item-color="secondary"
                 clearable
@@ -149,6 +163,15 @@
         <template #[`item.createdAt`]="{ item }">
           {{ item.createdAt | formatDate }}
         </template>
+
+        <template #[`item.isDeleted`]="{ item }">
+          <v-chip
+            :color="item.isDeleted === 1 ? 'error' : 'success'"
+            class="white--text"
+          >
+            {{ item.isDeleted === 1 ? "حساب محذوف" : "طبيعي" }}
+          </v-chip>
+        </template>
       </v-data-table>
     </v-card>
   </div>
@@ -157,6 +180,7 @@
 <script>
 import { GetActivities, GetActivitiesByQuery } from "@/api/activities";
 import { GetCustomers } from "@/api/customers";
+import { GetAccount } from "@/api/accounts";
 import exportExcel from "@/plugins/excel.js";
 import moment from "moment";
 export default {
@@ -170,6 +194,7 @@ export default {
       { text: "بواسطة", value: "activitieBy" },
       { text: "العميل", value: "customerName" },
       { text: "الحساب", value: "accountName" },
+      { text: "حالة الحساب", value: "isDeleted" },
     ],
     activitieTypes: [
       { text: "سحب", value: 1 },
@@ -181,6 +206,8 @@ export default {
     menu1: false,
     menu2: false,
     customers: [],
+    accounts: [],
+    accountId: "",
     customerId: "",
     activePicker: null,
 
@@ -207,6 +234,7 @@ export default {
   mounted() {
     this.getTransactions();
     this.getCustomers();
+    this.getAccounts();
   },
 
   methods: {
@@ -239,6 +267,7 @@ export default {
             endDate: this.date2,
             activitieType: this.activitieType,
             customerId: this.customerId,
+            accountId: this.accountId,
           };
           const transaction = await GetActivitiesByQuery(query);
           this.transactions = transaction;
@@ -252,6 +281,15 @@ export default {
       try {
         const customers = await GetCustomers();
         this.customers = customers;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async getAccounts() {
+      try {
+        const accounts = await GetAccount();
+        this.accounts = accounts;
       } catch (error) {
         console.error(error);
       }

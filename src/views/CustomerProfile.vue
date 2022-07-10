@@ -208,6 +208,15 @@
           </v-chip>
         </template>
 
+        <template #[`item.isDeleted`]="{ item }">
+          <v-chip
+            :color="item.isDeleted === 1 ? 'error' : 'success'"
+            class="white--text"
+          >
+            {{ item.isDeleted === 1 ? "حساب محذوف" : "طبيعي" }}
+          </v-chip>
+        </template>
+
         <template #[`item.createdAt`]="{ item }">
           {{ item.createdAt | formatDate }}
         </template>
@@ -269,6 +278,7 @@ export default {
       { text: "بواسطة", value: "activitieBy" },
       { text: "العميل", value: "customerName" },
       { text: "الحساب", value: "accountName" },
+      { text: "حالة الحساب", value: "isDeleted" },
     ],
 
     activePicker: null,

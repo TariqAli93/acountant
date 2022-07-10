@@ -18,6 +18,7 @@ export const GetActivities = () => {
         'customers.customerType',
         'account.accountId',
         'account.accountName',
+        'account.isDeleted',
       )
       .then((data) => {
         resolve(data)
@@ -46,6 +47,7 @@ export const GetActivitiesByQuery = (query) => {
         'customers.customerType',
         'account.accountId',
         'account.accountName',
+        'account.isDeleted',
       )
 
     if (query.activitieType) {
@@ -54,6 +56,10 @@ export const GetActivitiesByQuery = (query) => {
 
     if (query.customerId) {
       Query.where('activities.customerId', query.customerId)
+    }
+
+    if (query.accountId) {
+      Query.where('account.accountId', query.accountId)
     }
 
     if (query.startDate && query.endDate) {
@@ -93,6 +99,7 @@ export const GetActivitiesByCustomer = (id) => {
         'activities.customerId',
         'account.accountId',
         'account.accountName',
+        'account.isDeleted',
         'customers.customerName',
         'customers.customerId',
         'customers.customerType',
