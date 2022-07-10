@@ -21,7 +21,7 @@ module.exports = {
           provider: "github",
           owner: "TariqAli93",
           repo: "acountant",
-          token: "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",
+          token: "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",
           releaseType: "release",
         },
 
