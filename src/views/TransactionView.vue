@@ -250,6 +250,7 @@ export default {
       try {
         const transaction = await GetActivities();
         this.transactions = transaction;
+        console.log(this.transactions);
       } catch (error) {
         console.error(error);
       }

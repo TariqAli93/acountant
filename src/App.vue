@@ -70,10 +70,26 @@
         </v-list>
 
         <template #append>
-          <div style="padding-bottom: 5rem">
+          <div
+            style="
+              padding-bottom: 5rem;
+              padding-right: 10px;
+              padding-left: 10px;
+            "
+          >
             <v-btn
               depressed
-              class="mx-auto d-block"
+              block
+              color="warning"
+              @click="exportDatabase"
+              class="mb-2 secondary--text"
+            >
+              تصدير قاعدة البيانات
+            </v-btn>
+
+            <v-btn
+              depressed
+              block
               color="error"
               @click="$store.dispatch('logout')"
             >
@@ -99,6 +115,7 @@
 import login from "@/components/login/login.vue";
 import { bus } from "@/plugins/bus";
 import appTitle from "@/components/title/appTitle.vue";
+import exportDb from "@/api/exportdb";
 export default {
   name: "App",
   components: {
@@ -126,7 +143,15 @@ export default {
     },
   },
 
-  methods: {},
+  methods: {
+    exportDatabase() {
+      exportDb();
+      this.$toasted.success("تم تصدير قاعدة البيانات", {
+        position: "top-center",
+        duration: 5000,
+      });
+    },
+  },
 };
 </script>
 <style lang="scss">

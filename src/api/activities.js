@@ -20,7 +20,9 @@ export const GetActivities = () => {
         'account.accountName',
         'account.isDeleted',
       )
+      .where('activities.isDeleted', '=', 0)
       .then((data) => {
+        console.log(data)
         resolve(data)
       })
       .catch((err) => {
@@ -50,6 +52,8 @@ export const GetActivitiesByQuery = (query) => {
         'account.isDeleted',
       )
 
+    Query.where('activities.isDeleted', '=', 0)
+
     if (query.activitieType) {
       Query.where('activities.activitieType', query.activitieType)
     }
@@ -77,6 +81,7 @@ export const GetActivitiesByQuery = (query) => {
     }
 
     Query.then((data) => {
+      console.log(data)
       resolve(data)
     }).catch((err) => {
       reject(err)
