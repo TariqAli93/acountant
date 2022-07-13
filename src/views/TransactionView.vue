@@ -257,7 +257,7 @@ export default {
     },
 
     exportTable() {
-      exportExcel(this.transactions);
+      exportExcel(this.transactions, 1);
     },
 
     async filterActivites() {

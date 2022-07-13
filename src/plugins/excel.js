@@ -1,53 +1,49 @@
 import * as ExcelJS from 'exceljs';
 import moment from 'moment'
 
-const exportExcel = (item) => {
-    console.log(item);
+const exportExcel = (item, type) => {
+    console.log({ item, type });
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(`تقرير الصندوق`);
     worksheet.views = [{ rightToLeft: true }];
-    worksheet.pageSetup.orientation = 'landscape';
-    worksheet.pageSetup.paperSize = 'A4';
     worksheet.pageSetup.fitToPage = true;
     worksheet.pageSetup.fitToHeight = 0;
     worksheet.pageSetup.fitToWidth = 1;
+    worksheet.pageSetup.margins = {
+        left: 0.7,
+        right: 0.7,
+        top: 0,
+        bottom: 0.75,
+        header: 0,
+        footer: 0.3
+    };
     worksheet.pageSetup.horizontalCentered = true;
-    worksheet.pageSetup.verticalCentered = true;
-    worksheet.pageSetup.scale = 100;
+    worksheet.pageSetup.verticalCentered = false;
 
-    worksheet.getCell(`A1`).value = 'تقرير الصندوق';
-    worksheet.mergeCells("A1:H1");
+    worksheet.getCell(`A1`).value = type === 1 ? 'تقرير الصندوق' : `كشف حساب ${item[0].customerName}`;
+    worksheet.mergeCells("A1:E1");
     worksheet.getCell(`A1`).alignment = { horizontal: "center" };
     worksheet.getCell(`A2`).value = `نوع الحركة`;
     worksheet.getCell(`B2`).value = `المبلغ`;
-    worksheet.getCell(`C2`).value = `الملاحظات`;
-    worksheet.getCell(`D2`).value = `بواسطة`;
-    worksheet.getCell(`E2`).value = `العميل`;
-    worksheet.getCell(`F2`).value = `نوع العميل`;
-    worksheet.getCell(`G2`).value = `الحساب`;
-    worksheet.getCell(`H2`).value = `التاريخ`;
+    worksheet.getCell(`C2`).value = `بواسطة`;
+    worksheet.getCell(`D2`).value = `التاريخ`;
+    worksheet.getCell(`E2`).value = `الملاحظات`;
 
     worksheet.columns = [
         { key: "activitieType", width: '10' },
         { key: "amount", width: '15', alignment: { horizontal: "right" } },
-        { key: "note", width: '20', alignment: { horizontal: "right" }, isCustomWidth: true },
         { key: "activitieBy", width: '15', alignment: { horizontal: "right" } },
-        { key: "customerName", width: '15', alignment: { horizontal: "right" } },
-        { key: "customerType", width: '15', alignment: { horizontal: "right" } },
-        { key: "accountName", width: '15', alignment: { horizontal: "right" } },
         { key: "createdAt", width: '15', alignment: { horizontal: "right" } },
+        { key: "note", width: '30', alignment: { horizontal: "right" }, isCustomWidth: true },
     ];
 
     item.forEach((activitie) => {
         worksheet.addRow({
             activitieType: activitie.activitieType === 1 ? 'سحب' : 'ايداع',
             amount: activitie.amount * 1,
-            note: activitie.note,
             activitieBy: activitie.activitieBy,
-            customerName: activitie.customerName,
-            customerType: activitie.customerType === 1 ? 'موظف' : 'اخر',
-            accountName: activitie.accountName,
-            createdAt: moment(activitie.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+            createdAt: moment(activitie.createdAt).format('YYYY-MM-DD'),
+            note: activitie.note,
         });
     });
 
@@ -98,7 +94,7 @@ const exportExcel = (item) => {
         document.body.appendChild(a);
         a.setAttribute("style", "display: none");
         a.href = url;
-        a.download = `تقرير الصندوق-${moment().format('YYYY-MM-DD HH:mm:ss')}.xlsx`;
+        a.download = type === 1 ? `تقرير الصندوق-${moment().format('YYYY-MM-DD HH:mm:ss')}.xlsx` : `كشف حساب-${item[0].customerName}-${moment().format('YYYY-MM-DD HH:mm:ss')}.xlsx`;
         a.click();
         window.URL.revokeObjectURL(url);
         a.remove();

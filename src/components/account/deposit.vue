@@ -7,7 +7,7 @@
       @submit.prevent="deposit"
     >
       <v-row>
-        <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+        <v-col cols="12" sm="12" md="6" lg="6" xl="6">
           <v-text-field
             outlined
             color="secondary"
@@ -19,7 +19,7 @@
           ></v-text-field>
         </v-col>
 
-        <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+        <v-col cols="12" sm="12" md="6" lg="6" xl="6">
           <v-text-field
             outlined
             color="secondary"
@@ -31,7 +31,46 @@
           ></v-text-field>
         </v-col>
 
-        <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+        <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                outlined
+                v-model="depositModel.createdAt"
+                label="تاريخ الحركة"
+                placeholder="تاريخ الحركة"
+                persistent-placeholder
+                readonly
+                v-bind="attrs"
+                v-on="on"
+                color="secondary"
+                clearable
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="depositModel.createdAt"
+              no-title
+              dark
+              :active-picker.sync="activePicker"
+              :max="
+                new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+                  .toISOString()
+                  .substr(0, 10)
+              "
+              min="1950-01-01"
+              @change="save"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+
+        <v-col cols="12" sm="12" md="6" lg="6" xl="6">
           <v-combobox
             outlined
             :items="customers"
@@ -85,13 +124,15 @@ export default {
   data: () => ({
     rules: [(v) => !!v || "لا يمكن ترك الحقل فارغ"],
     customers: [],
+    activePicker: null,
+    menu: false,
     depositModel: {
       activitieBy: null,
       activitieType: 2,
       idCustomer: null,
       amount: 0,
       note: "لا يوجد ملاحظات",
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString().split("T")[0],
       valid: false,
     },
   }),
@@ -99,6 +140,12 @@ export default {
   mounted() {
     this.getCustomer();
     this.depositModel.idCustomer = this.theCustomer || null;
+  },
+
+  watch: {
+    menu(val) {
+      val && setTimeout(() => (this.activePicker = "YEAR"));
+    },
   },
 
   methods: {
@@ -109,6 +156,10 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+
+    save(date) {
+      this.$refs.menu.save(date);
     },
 
     async deposit() {

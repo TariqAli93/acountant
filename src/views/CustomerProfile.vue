@@ -287,7 +287,7 @@ export default {
   filters: {
     formatDate(value) {
       if (!value) return "";
-      return moment(value).format("YYYY-MM-DD HH:mm:ss A");
+      return moment(value).format("YYYY-MM-DD");
     },
   },
 
@@ -323,7 +323,7 @@ export default {
     },
 
     exportTable() {
-      exportExcel(this.transactions);
+      exportExcel(this.transactions, 2);
     },
 
     async getCustomer() {
