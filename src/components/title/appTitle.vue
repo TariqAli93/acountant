@@ -26,7 +26,7 @@
 import { ipcRenderer, remote } from "electron";
 export default {
   data: () => ({
-    title: "برنامج امين الصندوق",
+    title: `برنامج امين الصندوق - ${remote.app.getVersion()}`,
     isMaximized: true,
   }),
 

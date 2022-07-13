@@ -3,6 +3,13 @@ import { app, protocol, BrowserWindow, globalShortcut, ipcMain, dialog } from "e
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
+import exportdb from './api/exportdb';
+
+import { autoUpdater } from "electron-updater"
+import log from 'electron-log'
+
+log.transports.file.level = "debug"
+autoUpdater.logger = log
 
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: false, standard: true, stream: true } },
@@ -74,6 +81,11 @@ async function createWindow() {
   } else {
     createProtocol("app");
     win.loadURL("app://./index.html");
+    autoUpdater.checkForUpdatesAndNotify().then(() => {
+      exportdb()
+    }).catch((err) => {
+      log.error(err);
+    })
   }
 }
 
@@ -102,6 +114,8 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
+
+
 
 app.on("ready", async () => {
   if (isDevelopment && !process.env.IS_TEST) {

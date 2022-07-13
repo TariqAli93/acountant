@@ -1,7 +1,7 @@
 import * as ExcelJS from 'exceljs';
 import moment from 'moment'
 
-const exportExcel = (item, type) => {
+const exportExcel = (item, type, status) => {
     console.log({ item, type });
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(`تقرير الصندوق`);
@@ -20,7 +20,7 @@ const exportExcel = (item, type) => {
     worksheet.pageSetup.horizontalCentered = true;
     worksheet.pageSetup.verticalCentered = false;
 
-    worksheet.getCell(`A1`).value = type === 1 ? 'تقرير الصندوق' : `كشف حساب ${item[0].customerName}`;
+    worksheet.getCell(`A1`).value = type === 1 ? 'تقرير الصندوق' : `كشف حساب ${item[0].customerName} - ${status}`;
     worksheet.mergeCells("A1:E1");
     worksheet.getCell(`A1`).alignment = { horizontal: "center" };
     worksheet.getCell(`A2`).value = `نوع الحركة`;

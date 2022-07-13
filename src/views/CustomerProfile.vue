@@ -323,7 +323,7 @@ export default {
     },
 
     exportTable() {
-      exportExcel(this.transactions, 2);
+      exportExcel(this.transactions, 2, this.customerAmountStatus);
     },
 
     async getCustomer() {
