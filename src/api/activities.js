@@ -22,8 +22,9 @@ export const GetActivities = () => {
       )
       .where('activities.isDeleted', '=', 0)
       .then((data) => {
-        console.log(data)
-        resolve(data)
+        const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        console.log(sortedData)
+        resolve(sortedData)
       })
       .catch((err) => {
         reject(err)
@@ -81,8 +82,9 @@ export const GetActivitiesByQuery = (query) => {
     }
 
     Query.then((data) => {
-      console.log(data)
-      resolve(data)
+      const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+      console.log(sortedData)
+      resolve(sortedData)
     }).catch((err) => {
       reject(err)
     })
@@ -112,7 +114,9 @@ export const GetActivitiesByCustomer = (id) => {
       )
       .where('activities.customerId', id)
       .then((data) => {
-        resolve(data)
+        const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        console.log(sortedData)
+        resolve(sortedData)
       }).catch((err) => {
         reject(err)
       })
