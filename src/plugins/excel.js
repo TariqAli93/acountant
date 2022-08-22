@@ -44,14 +44,30 @@ const exportExcel = (item, type, status) => {
             activitieBy: activitie.activitieBy,
             createdAt: moment(activitie.createdAt).format('YYYY-MM-DD'),
             note: activitie.note,
-        });
+        }).eachCell((cell) => {
+            cell.font = {
+                name: "Tahoma",
+                family: 1,
+                size: 17,
+                underline: false,
+                bold: false,
+            };
+        })
     });
+
+    let withdraType = item.filter((type) => type.activitieType === 1);
+    let depositType = item.filter((type) => type.activitieType === 2);
+
+    let totalWithdraw = withdraType.reduce((a, b) => a + b.amount * 1, 0)
+    let totalDipost = depositType.length < 1 ? 0 : depositType.reduce((a, b) => a + b.amount * 1, 0)
+
+    let itemCount = item.length + 3;
 
     worksheet.getRow(1).eachCell((cell) => {
         cell.font = {
-            name: "Comic Sans MS",
-            family: 4,
-            size: 20,
+            name: "Tahoma",
+            family: 1,
+            size: 17,
             underline: false,
             bold: true,
             color: { argb: "00ffffff" },
@@ -67,8 +83,8 @@ const exportExcel = (item, type, status) => {
 
     worksheet.getRow(2).eachCell((cell) => {
         cell.font = {
-            name: "Comic Sans MS",
-            family: 4,
+            name: "Tahoma",
+            family: 1,
             size: 14,
             underline: false,
             bold: true,
@@ -82,6 +98,44 @@ const exportExcel = (item, type, status) => {
             },
         };
     });
+
+    worksheet.mergeCells(`A${itemCount + 1}:C${itemCount + 1}`)
+    worksheet.mergeCells(`D${itemCount + 1}:E${itemCount + 1}`)
+
+
+    worksheet.getCell(`A${itemCount + 1}`).value = `سحب: ${totalWithdraw}`
+    worksheet.getCell(`A${itemCount + 1}`).alignment = { horizontal: "right" };
+
+    worksheet.getCell(`E${itemCount + 1}`).value = `ايداع: ${totalDipost}`
+    worksheet.getCell(`E${itemCount + 1}`).alignment = { horizontal: "right" };
+
+    worksheet.getCell(`A${itemCount + 1}`).font = {
+        bold: true,
+        color: { argb: 'ffffff' },
+        family: 1,
+        name: 'Tahoma',
+        underline: false
+    }
+
+    worksheet.getCell(`A${itemCount + 1}`).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'f06308' }
+    }
+
+    worksheet.getCell(`D${itemCount + 1}`).font = {
+        bold: true,
+        color: { argb: 'ffffff' },
+        family: 1,
+        name: 'Tahoma',
+        underline: false
+    }
+    
+    worksheet.getCell(`D${itemCount + 1}`).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '0880f0' }
+    }
 
 
     // create downloaded xlsx file
