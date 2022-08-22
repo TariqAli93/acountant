@@ -131,7 +131,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                color="secondary"
+                  color="secondary"
                   v-model="customerTrans.createdAt"
                   :active-picker.sync="activePicker"
                   :max="
@@ -220,6 +220,12 @@
         <template #[`item.createdAt`]="{ item }">
           {{ item.createdAt | formatDate }}
         </template>
+
+        <template #[`item.actions`]="{ item }">
+          <v-btn icon color="error" @click="confirmDelete(item)">
+            <v-icon>delete</v-icon>
+          </v-btn>
+        </template>
       </v-data-table>
     </v-card>
     <!-- customer activites list -->
@@ -227,18 +233,24 @@
 </template>
 
 <script>
-import { GetActivitiesByCustomer } from "@/api/activities";
+import { GetActivitiesByCustomer, DeleteActivity } from "@/api/activities";
 import {
   GetCustomers,
   DecrementCustomerBalance,
   IncrementCustomerBalance,
 } from "@/api/customers.js";
-import { GetAccount, createActivities } from "../api/accounts.js";
+import {
+  GetAccount,
+  createActivities,
+  withdrawAccount,
+  depositAccount,
+} from "../api/accounts.js";
 import withdraw from "@/components/account/withdraw.vue";
 import deposit from "@/components/account/deposit.vue";
 import exportExcel from "@/plugins/excel.js";
 import moment from "moment";
 import { bus } from "@/plugins/bus.js";
+import { remote } from "electron";
 export default {
   components: {
     withdraw,
@@ -279,6 +291,7 @@ export default {
       { text: "العميل", value: "customerName" },
       { text: "الحساب", value: "accountName" },
       { text: "حالة الحساب", value: "isDeleted" },
+      { text: "الاجرائات", value: "actions" },
     ],
 
     activePicker: null,
@@ -357,7 +370,7 @@ export default {
             createdAt: this.customerTrans.createdAt,
           };
 
-          console.log(activitiesData)
+          console.log(activitiesData);
           await createActivities(activitiesData);
 
           if (this.customerTrans.activitieType === 1) {
@@ -377,6 +390,73 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+
+    confirmDelete(item) {
+      const dialogOpts = {
+        type: "warning",
+        buttons: ["إلغاء", "حذف العملية"],
+        title: "حذف العملية",
+        message: "هل أنت متأكد من أنك تريد خذف العملية؟",
+        detail: "سيتم خذف العملية بعد الضغط على زر الحذف",
+      };
+
+      remote.dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 1) {
+          this.deleteActivities(item);
+        }
+      });
+    },
+
+    async deleteActivities(item) {
+      const { activitieId, activitieType, amount, accountId, customerId } =
+        item;
+      const depositData = {
+        accountId: accountId * 1,
+        amount: amount * 1,
+        userId: this.$store.getters.getUser.id,
+      };
+
+      const withdrawData = {
+        accountId: accountId * 1,
+        amount: amount * 1,
+        userId: this.$store.getters.getUser.id,
+      };
+
+      // if 1 then call deposit function else call withdraw
+      if (activitieType === 1) {
+        IncrementCustomerBalance({
+          customerId: customerId * 1,
+          customerAmount: amount * 1,
+        });
+
+        await depositAccount(depositData);
+
+        this.$toasted.success("تم حذف العملية بنجاح", {
+          position: "top-center",
+          duration: 5000,
+        });
+
+        bus.$emit("deposit");
+        await DeleteActivity(activitieId * 1);
+      } else {
+        DecrementCustomerBalance({
+          customerId: customerId * 1,
+          customerAmount: amount * 1,
+        });
+
+        withdrawAccount(withdrawData);
+
+        this.$toasted.success("تم حذف العملية بنجاح", {
+          position: "top-center",
+          duration: 5000,
+        });
+
+        bus.$emit("withdraw");
+        await DeleteActivity(activitieId * 1);
+      }
+
+      this.getActivities();
     },
   },
 

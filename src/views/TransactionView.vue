@@ -172,17 +172,33 @@
             {{ item.isDeleted === 1 ? "حساب محذوف" : "طبيعي" }}
           </v-chip>
         </template>
+
+        <template #[`item.actions`]="{ item }">
+          <v-btn icon color="error" @click="confirmDelete(item)">
+            <v-icon>delete</v-icon>
+          </v-btn>
+        </template>
       </v-data-table>
     </v-card>
   </div>
 </template>
 
 <script>
-import { GetActivities, GetActivitiesByQuery } from "@/api/activities";
-import { GetCustomers } from "@/api/customers";
-import { GetAccount } from "@/api/accounts";
+import {
+  GetActivities,
+  GetActivitiesByQuery,
+  DeleteActivity,
+} from "@/api/activities";
+import {
+  GetCustomers,
+  DecrementCustomerBalance,
+  IncrementCustomerBalance,
+} from "@/api/customers";
+import { GetAccount, withdrawAccount, depositAccount } from "@/api/accounts";
 import exportExcel from "@/plugins/excel.js";
 import moment from "moment";
+import { remote } from "electron";
+import { bus } from "@/plugins/bus.js";
 export default {
   data: () => ({
     transactions: [],
@@ -195,6 +211,7 @@ export default {
       { text: "العميل", value: "customerName" },
       { text: "الحساب", value: "accountName" },
       { text: "حالة الحساب", value: "isDeleted" },
+      { text: "الاجرائات", value: "actions" },
     ],
     activitieTypes: [
       { text: "سحب", value: 1 },
@@ -294,6 +311,73 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+
+    confirmDelete(item) {
+      const dialogOpts = {
+        type: "warning",
+        buttons: ["إلغاء", "حذف العملية"],
+        title: "حذف العملية",
+        message: "هل أنت متأكد من أنك تريد خذف العملية؟",
+        detail: "سيتم خذف العملية بعد الضغط على زر الحذف",
+      };
+
+      remote.dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 1) {
+          this.deleteActivities(item);
+        }
+      });
+    },
+
+    async deleteActivities(item) {
+      const { activitieId, activitieType, amount, accountId, customerId } =
+        item;
+      const depositData = {
+        accountId: accountId * 1,
+        amount: amount * 1,
+        userId: this.$store.getters.getUser.id,
+      };
+
+      const withdrawData = {
+        accountId: accountId * 1,
+        amount: amount * 1,
+        userId: this.$store.getters.getUser.id,
+      };
+
+      // if 1 then call deposit function else call withdraw
+      if (activitieType === 1) {
+        IncrementCustomerBalance({
+          customerId: customerId * 1,
+          customerAmount: amount * 1,
+        });
+
+        await depositAccount(depositData);
+
+        this.$toasted.success("تم حذف العملية بنجاح", {
+          position: "top-center",
+          duration: 5000,
+        });
+
+        bus.$emit("deposit");
+        await DeleteActivity(activitieId * 1);
+      } else {
+        DecrementCustomerBalance({
+          customerId: customerId * 1,
+          customerAmount: amount * 1,
+        });
+
+        withdrawAccount(withdrawData);
+
+        this.$toasted.success("تم حذف العملية بنجاح", {
+          position: "top-center",
+          duration: 5000,
+        });
+
+        bus.$emit("withdraw");
+        await DeleteActivity(activitieId * 1);
+      }
+
+      this.getTransactions();
     },
   },
 };

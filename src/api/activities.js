@@ -93,7 +93,7 @@ export const GetActivitiesByQuery = (query) => {
 
 export const GetActivitiesByCustomer = (id) => {
   return new Promise((resolve, reject) => {
-    db('activities')
+    let Query = db('activities')
       .join('customers', 'customers.customerId', 'activities.customerId')
       .join('account', 'account.accountId', 'activities.accountId')
       .select(
@@ -112,11 +112,25 @@ export const GetActivitiesByCustomer = (id) => {
         'customers.customerType',
         'customers.customerAmount',
       )
-      .where('activities.customerId', id)
+      
+      Query.where('activities.isDeleted', '=', 0)
+      Query.where('activities.customerId', id)
       .then((data) => {
         const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
         console.log(sortedData)
         resolve(sortedData)
+      }).catch((err) => {
+        reject(err)
+      })
+  })
+}
+
+export const DeleteActivity = (id) => {
+  return new Promise((resolve, reject) => {
+    db('activities').where('activities.activitieId', '=', id)
+      .update({ isDeleted: 1 })
+      .then((data) => {
+        resolve(data)
       }).catch((err) => {
         reject(err)
       })
