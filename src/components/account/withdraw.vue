@@ -126,6 +126,7 @@ export default {
     customers: [],
     activePicker: null,
     menu: false,
+    newAmount: "",
     withdrawModel: {
       activitieBy: null,
       activitieType: 1,
@@ -146,6 +147,7 @@ export default {
   mounted() {
     this.getCustomer();
     this.withdrawModel.idCustomer = this.theCustomer || null;
+    this.newAmount = this.$store.getters.getSelectedAccount.amount
   },
 
   methods: {
@@ -200,6 +202,7 @@ export default {
                 : this.$store.getters.getSelectedAccount.accountId,
             amount: this.withdrawModel.amount * 1,
             userId: this.$store.getters.getUser.id,
+            newAmount: this.newAmount
           };
 
           const activitieData = {
@@ -223,7 +226,9 @@ export default {
             duration: 5000,
           });
 
-          bus.$emit("withdraw");
+          bus.$emit("withdraw", {
+            accountId: this.$store.getters.getSelectedAccount.accountId,
+          });
         }
       } catch (error) {
         this.$toasted.error("حدث خطأ أثناء السحب", {

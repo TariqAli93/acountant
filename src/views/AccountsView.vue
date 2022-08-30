@@ -79,6 +79,10 @@
         <v-data-table :headers="headers" :items="accounts" :items-per-page="50">
           <template #[`item.actions`]="{ item }">
             <v-btn icon>
+              <v-icon @click="openInfoDialog(item)">info</v-icon>
+            </v-btn>
+
+            <v-btn icon>
               <v-icon @click="editAccount(item)">edit</v-icon>
             </v-btn>
 
@@ -109,6 +113,30 @@
         </div>
       </v-container>
     </v-card>
+
+    <v-dialog v-model="infoDialog" persistent max-width="650px">
+       <v-card elevation="1">
+      <v-toolbar color="primary" dense flat elevation="0">
+        <v-toolbar-title>معلومات الحساب</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="infoDialog = false">
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-toolbar>
+
+      <v-divider />
+
+      <v-container>
+        <v-data-table :headers="infoListHeaders" :items="infoList" :items-per-page="50">
+          <template #[`item.isEmpty`]="{ item }">
+            <v-chip :color=" item.isEmpty === 1 ? 'error': 'success'">{{
+              item.isEmpty === 1 ? "تصفير الحساب" : "ايداع"
+            }}</v-chip>
+          </template>
+        </v-data-table>
+      </v-container>
+    </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -118,17 +146,20 @@ import {
   UpdateAccount,
   GetAccount,
   DeleteAccount,
+  getAccountLog,
 } from "@/api/accounts";
 
 import tafqeet from "@/plugins/tafqeet";
-import { truncateSync } from "original-fs";
+import { bus } from "@/plugins/bus";
 export default {
   data: () => ({
+    infoDialog: false,
     account: {
       name: "",
       amount: "",
       accountId: "",
       accountType: 0,
+      oldAmount: "",
       type: 1, // 1 is create || 2 is update
       valid: false,
     },
@@ -139,12 +170,19 @@ export default {
     rules: [(v) => !!v || "الرجاء ادخال البيانات"],
     accounts: [],
     customers: [],
+    infoList: [],
     headers: [
       { text: "رقم الحساب", value: "accountId" },
       { text: "اسم الحساب", value: "accountName" },
       { text: "المبلغ", value: "amount" },
       { text: "نوع الحساب", value: "isDefault" },
       { text: "الاجرائات", value: "actions" },
+    ],
+    infoListHeaders: [
+      { text: "رقم العملية", value: "accountLogId" },
+      { text: "التاريخ", value: "date" },
+      { text: "المبلغ", value: "amount" },
+      { text: "نوع العملية", value: "isEmpty" },
     ],
   }),
 
@@ -168,6 +206,8 @@ export default {
 
   mounted() {
     this.getAccounts();
+    bus.$on("deposit", (deposit) => console.log(deposit));
+    bus.$on("withdraw", (withdraw) => console.log(withdraw));
   },
 
   methods: {
@@ -191,6 +231,7 @@ export default {
             });
           } else {
             await UpdateAccount({
+              oldAmount: this.oldAmount,
               accountId: this.account.accountId,
               accountName: this.account.name,
               amount: this.account.amount,
@@ -228,11 +269,12 @@ export default {
       this.account.amount = account.amount;
       this.account.accountId = account.accountId;
       this.account.accountType = account.isDefault;
+      this.oldAmount = account.amount;
       this.$vuetify.goTo(0);
     },
 
     async deleteAccount(account) {
-      console.log(account)
+      console.log(account);
       try {
         await DeleteAccount(account.accountId);
         this.getAccounts();
@@ -253,6 +295,21 @@ export default {
       this.account.type = 1;
       this.account.name = "";
       this.account.amount = "";
+    },
+
+    openInfoDialog(item) {
+      this.infoDialog = true;
+      this.getInfo(item);
+    },
+
+    async getInfo(item) {
+      try {
+        const data = await getAccountLog(item.accountId);
+        console.log(data)
+        this.infoList = data;
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };

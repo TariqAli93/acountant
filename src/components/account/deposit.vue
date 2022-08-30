@@ -126,6 +126,7 @@ export default {
     customers: [],
     activePicker: null,
     menu: false,
+    oldAmount: "",
     depositModel: {
       activitieBy: null,
       activitieType: 2,
@@ -140,6 +141,7 @@ export default {
   mounted() {
     this.getCustomer();
     this.depositModel.idCustomer = this.theCustomer || null;
+    this.oldAmount = this.$store.getters.getSelectedAccount.amount
   },
 
   watch: {
@@ -191,6 +193,7 @@ export default {
                 : this.$store.getters.getSelectedAccount.accountId,
             amount: this.depositModel.amount * 1,
             userId: this.$store.getters.getUser.id,
+            oldAmount: this.oldAmount
           };
 
           const activitieData = {
@@ -215,8 +218,10 @@ export default {
             duration: 5000,
           });
 
-          bus.$emit("deposit");
+          bus.$emit("deposit", { accountId: this.$store.getters.getSelectedAccount.accountId });
         }
+
+        this.oldAmount = "";
       } catch (error) {
         this.$toasted.error("حدث خطأ ما", {
           position: "top-center",
