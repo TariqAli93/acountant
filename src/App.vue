@@ -87,12 +87,7 @@
               تصدير قاعدة البيانات
             </v-btn>
 
-            <v-btn
-              depressed
-              block
-              color="error"
-              @click="$store.dispatch('logout')"
-            >
+            <v-btn depressed block color="error" @click="logout">
               <v-icon color="white" class="ml-3">logout</v-icon>
               <span class="white--text">تسجيل الخروج</span>
             </v-btn>
@@ -116,6 +111,7 @@ import login from "@/components/login/login.vue";
 import { bus } from "@/plugins/bus";
 import appTitle from "@/components/title/appTitle.vue";
 import exportDb from "@/api/exportdb";
+import { ipcRenderer, remote } from "electron";
 export default {
   name: "App",
   components: {
@@ -150,6 +146,15 @@ export default {
         position: "top-center",
         duration: 5000,
       });
+    },
+
+    quitApp() {
+      ipcRenderer.send("quit");
+    },
+
+    logout() {
+      this.$store.dispatch("logout");
+      remote.app.exit(0)
     },
   },
 };

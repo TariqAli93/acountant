@@ -81,7 +81,7 @@ export default {
   computed: {
     balanceAmount() {
       return this.$store.getters.getSelectedAccount
-        ? this.$store.getters.getSelectedAccount.amount
+        ? Math.floor(this.$store.getters.getSelectedAccount.amount)
         : 0;
     },
   },

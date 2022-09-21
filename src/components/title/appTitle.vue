@@ -58,7 +58,11 @@ export default {
     },
 
     quitApp() {
-      ipcRenderer.send("quit");
+      this.$store.dispatch("logout");
+
+      setTimeout(() => {
+        ipcRenderer.send("quit");
+      }, 500);
     },
   },
 };

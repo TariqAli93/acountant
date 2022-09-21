@@ -149,8 +149,20 @@
       <v-data-table
         :items="transactions"
         :headers="headers"
+        :search="search"
         :items-per-page="50"
       >
+        <template #top>
+          <v-container>
+            <v-text-field
+              v-model="search"
+              label="بحث"
+              outlined
+              hide-details
+              color="secondary"
+            ></v-text-field>
+          </v-container>
+        </template>
         <template #[`item.activitieType`]="{ item }">
           <v-chip
             :color="item.activitieType === 1 ? 'error' : 'success'"
@@ -229,6 +241,7 @@ export default {
     activePicker: null,
 
     rules: [(v) => !!v || "التاريخ مطلوب"],
+    search: "",
   }),
 
   watch: {
@@ -244,7 +257,7 @@ export default {
   filters: {
     formatDate(value) {
       if (!value) return "";
-      return moment(value).format("YYYY-MM-DD HH:mm:ss A");
+      return moment(value).format("YYYY-MM-DD");
     },
   },
 
