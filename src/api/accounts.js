@@ -147,7 +147,8 @@ export const createActivities = (activitie) => {
                 note: activitie.note,
                 createdAt: activitie.createdAt,
                 customerId: activitie.customerId,
-                accountId: activitie.accountId
+                accountId: activitie.accountId,
+                activitieStatus: activitie.activitieStatus
             })
             .into('activities')
             .then(data => resolve(data))

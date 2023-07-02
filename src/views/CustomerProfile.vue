@@ -52,125 +52,55 @@
       <v-divider />
 
       <v-container>
-        <v-form
-          ref="customerFormRef"
-          v-model="customerTrans.valid"
-          lazy-validation
-          @submit.prevent="customerTransaction"
-        >
+        <v-form ref="customerFormRef" v-model="customerTrans.valid" lazy-validation @submit.prevent="customerTransaction">
           <v-row>
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
-              <v-text-field
-                outlined
-                color="secondary"
-                label="المبلغ"
-                placeholder="المبلغ"
-                :rules="rules"
-                v-model="customerTrans.amount"
-                type="number"
-              ></v-text-field>
+              <v-text-field outlined color="secondary" label="المبلغ" placeholder="المبلغ" :rules="rules"
+                v-model="customerTrans.amount" type="number"></v-text-field>
             </v-col>
 
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
-              <v-text-field
-                outlined
-                color="secondary"
-                label="بواسطة"
-                placeholder="بواسطة"
-                :rules="rules"
-                v-model="customerTrans.activitieBy"
-              ></v-text-field>
+              <v-text-field outlined color="secondary" label="بواسطة" placeholder="بواسطة" :rules="rules"
+                v-model="customerTrans.activitieBy"></v-text-field>
             </v-col>
 
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
-              <v-select
-                :items="customers"
-                item-text="customerName"
-                item-value="customerId"
-                item-color="secondary"
-                outlined
-                color="secondary"
-                label="العميل"
-                placeholder="العميل"
-                :rules="rules"
-                v-model="customerTrans.idCustomer"
-              ></v-select>
+              <v-select :items="customer" item-text="customerName" item-value="customerId" item-color="secondary" outlined
+                color="secondary" label="العميل" placeholder="العميل" :rules="rules"
+                v-model="customerTrans.idCustomer"></v-select>
             </v-col>
 
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
-              <v-select
-                :items="activitieTypes"
-                item-color="secondary"
-                outlined
-                color="secondary"
-                label="نوع الحركة"
-                placeholder="نوع الحركة"
-                :rules="rules"
-                v-model="customerTrans.activitieType"
-              ></v-select>
+              <v-select :items="activitieTypes" item-color="secondary" outlined color="secondary" label="نوع الحركة"
+                placeholder="نوع الحركة" :rules="rules" v-model="customerTrans.activitieType"></v-select>
             </v-col>
 
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
-              <v-menu
-                ref="menu"
-                v-model="menu"
-                :close-on-content-click="false"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-              >
+              <v-menu ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y
+                min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="customerTrans.createdAt"
-                    outlined
-                    color="secondary"
-                    label="تاريخ الحركة"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
+                  <v-text-field v-model="customerTrans.createdAt" outlined color="secondary" label="تاريخ الحركة" readonly
+                    v-bind="attrs" v-on="on"></v-text-field>
                 </template>
-                <v-date-picker
-                  color="secondary"
-                  v-model="customerTrans.createdAt"
-                  :active-picker.sync="activePicker"
-                  :max="
-                    new Date(
-                      Date.now() - new Date().getTimezoneOffset() * 60000
-                    )
-                      .toISOString()
-                      .substr(0, 10)
-                  "
-                  min="1950-01-01"
-                  @change="save"
-                ></v-date-picker>
+                <v-date-picker color="secondary" v-model="customerTrans.createdAt" :active-picker.sync="activePicker"
+                  :max="new Date(
+                    Date.now() - new Date().getTimezoneOffset() * 60000
+                  )
+                    .toISOString()
+                    .substr(0, 10)
+                    " min="1950-01-01" @change="save"></v-date-picker>
               </v-menu>
             </v-col>
 
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
-              <v-select
-                :items="accounts"
-                item-text="accountName"
-                item-value="accountId"
-                item-color="secondary"
-                outlined
-                color="secondary"
-                label="الحساب"
-                placeholder="الحساب"
-                :rules="rules"
-                v-model="customerTrans.accountId"
-              ></v-select>
+              <v-select :items="accounts" item-text="accountName" item-value="accountId" item-color="secondary" outlined
+                color="secondary" label="الحساب" placeholder="الحساب" :rules="rules"
+                v-model="customerTrans.accountId"></v-select>
             </v-col>
 
             <v-col cols="12">
-              <v-textarea
-                outlined
-                color="secondary"
-                label="الملاحظات"
-                placeholder="الملاحظات"
-                :rules="rules"
-                v-model="customerTrans.note"
-              ></v-textarea>
+              <v-textarea outlined color="secondary" label="الملاحظات" placeholder="الملاحظات" :rules="rules"
+                v-model="customerTrans.note"></v-textarea>
             </v-col>
           </v-row>
 
@@ -183,9 +113,7 @@
     <!-- customer activites list -->
     <v-card elevation="1">
       <v-toolbar color="primary" dense flat elevation="0">
-        <v-toolbar-title style="width: 160px"
-          >كشوفات {{ $route.params.name }}</v-toolbar-title
-        >
+        <v-toolbar-title style="width: 160px">كشوفات {{ $route.params.name }}</v-toolbar-title>
 
         <v-spacer />
         <v-btn icon @click="exportTable">
@@ -194,31 +122,28 @@
       </v-toolbar>
 
       <v-divider />
-      <v-data-table
-        :items="transactions"
-        :headers="headers"
-        :items-per-page="50"
-      >
+      <v-data-table :items="transactions" :headers="headers" :items-per-page="50">
         <template #[`item.activitieType`]="{ item }">
-          <v-chip
-            :color="item.activitieType === 1 ? 'error' : 'success'"
-            class="white--text"
-          >
+          <v-chip :color="item.activitieType === 1 ? 'error' : 'success'" class="white--text">
             {{ item.activitieType === 1 ? "سحب" : "ايداع" }}
           </v-chip>
         </template>
 
         <template #[`item.isDeleted`]="{ item }">
-          <v-chip
-            :color="item.isDeleted === 1 ? 'error' : 'success'"
-            class="white--text"
-          >
+          <v-chip :color="item.isDeleted === 1 ? 'error' : 'success'" class="white--text">
             {{ item.isDeleted === 1 ? "حساب محذوف" : "طبيعي" }}
           </v-chip>
         </template>
 
         <template #[`item.createdAt`]="{ item }">
           {{ item.createdAt | formatDate }}
+        </template>
+
+        <template #[`item.activitieStatus`]="{ item }">
+          <v-chip :color="item.activitieStatus === 1 ? 'success' : 'error'" class="white--text">
+
+            {{ item.activitieStatus === 1 ? "حقيقي" : "وهمي" }}
+          </v-chip>
         </template>
 
         <template #[`item.actions`]="{ item }">
@@ -235,7 +160,7 @@
 <script>
 import { GetActivitiesByCustomer, DeleteActivity } from "@/api/activities";
 import {
-  GetCustomers,
+  GetCustomerById,
   DecrementCustomerBalance,
   IncrementCustomerBalance,
 } from "@/api/customers.js";
@@ -258,8 +183,9 @@ export default {
   },
   data: () => ({
     transactions: [],
-    customers: [],
     accounts: [],
+    customer: [],
+    customerAmount: 0,
     rules: [(v) => !!v || "الحقل مطلوب"],
     activitieTypes: [
       {
@@ -285,6 +211,7 @@ export default {
       { text: "رقم الحركة", value: "activitieId" },
       { text: "نوع الحركة", value: "activitieType" },
       { text: "تاريخ الحركة", value: "createdAt" },
+      { text: "حالة الحركة", value: "activitieStatus" },
       { text: "المبلغ", value: "amount" },
       { text: "الملاحظات", value: "note" },
       { text: "بواسطة", value: "activitieBy" },
@@ -312,10 +239,7 @@ export default {
 
   computed: {
     customerAmountStatus() {
-      const amount =
-        this.transactions.length > 0
-          ? this.transactions[0].customerAmount * 1
-          : 0;
+      const amount = this.customerAmount !== undefined ? this.customerAmount * 1 : 0;
       return amount < 0 ? `مطلوب ${amount}` : `يطلب ${amount}`;
     },
   },
@@ -329,7 +253,6 @@ export default {
       try {
         const activities = await GetActivitiesByCustomer(this.$route.params.id);
         this.transactions = activities;
-        console.log(this.transactions);
       } catch (error) {
         console.log(error);
       }
@@ -339,10 +262,11 @@ export default {
       exportExcel(this.transactions, 2, this.customerAmountStatus);
     },
 
-    async getCustomer() {
+    async getCustomerById() {
       try {
-        const customers = await GetCustomers();
-        this.customers = customers;
+        const customer = await GetCustomerById(this.$route.params.id * 1);
+        this.customer = customer;
+        this.customerAmount = customer[0].customerAmount;
       } catch (error) {
         console.log(error);
       }
@@ -368,9 +292,10 @@ export default {
             note: this.customerTrans.note,
             accountId: this.customerTrans.accountId,
             createdAt: this.customerTrans.createdAt,
+            activitieStatus: 0
           };
 
-          console.log(activitiesData);
+
           await createActivities(activitiesData);
 
           if (this.customerTrans.activitieType === 1) {
@@ -386,6 +311,7 @@ export default {
           }
 
           this.getActivities();
+          this.getCustomerById();
         }
       } catch (error) {
         console.error(error);
@@ -409,61 +335,95 @@ export default {
     },
 
     async deleteActivities(item) {
-      const { activitieId, activitieType, amount, accountId, customerId } =
+      const { activitieId, activitieType, amount, accountId, customerId, activitieStatus } =
         item;
-      const depositData = {
-        accountId: accountId * 1,
-        amount: amount * 1,
-        userId: this.$store.getters.getUser.id,
-      };
 
-      const withdrawData = {
-        accountId: accountId * 1,
-        amount: amount * 1,
-        userId: this.$store.getters.getUser.id,
-      };
+      if (activitieStatus === 0) {
+        if (activitieType === 1) {
+          IncrementCustomerBalance({
+            customerId: customerId * 1,
+            customerAmount: amount * 1,
+          });
 
-      // if 1 then call deposit function else call withdraw
-      if (activitieType === 1) {
-        IncrementCustomerBalance({
-          customerId: customerId * 1,
-          customerAmount: amount * 1,
-        });
 
-        await depositAccount(depositData);
 
-        this.$toasted.success("تم حذف العملية بنجاح", {
-          position: "top-center",
-          duration: 5000,
-        });
+          this.$toasted.success("تم حذف العملية بنجاح", {
+            position: "top-center",
+            duration: 5000,
+          });
 
-        bus.$emit("deposit");
-        await DeleteActivity(activitieId * 1);
-      } else {
-        DecrementCustomerBalance({
-          customerId: customerId * 1,
-          customerAmount: amount * 1,
-        });
+          await DeleteActivity(activitieId * 1);
+        } else {
+          DecrementCustomerBalance({
+            customerId: customerId * 1,
+            customerAmount: amount * 1,
+          });
 
-        withdrawAccount(withdrawData);
 
-        this.$toasted.success("تم حذف العملية بنجاح", {
-          position: "top-center",
-          duration: 5000,
-        });
+          this.$toasted.success("تم حذف العملية بنجاح", {
+            position: "top-center",
+            duration: 5000,
+          });
 
-        bus.$emit("withdraw");
-        await DeleteActivity(activitieId * 1);
+          await DeleteActivity(activitieId * 1);
+        }
+      }
+      else {
+        const depositData = {
+          accountId: accountId * 1,
+          amount: amount * 1,
+          userId: this.$store.getters.getUser.id,
+        };
+
+        const withdrawData = {
+          accountId: accountId * 1,
+          amount: amount * 1,
+          userId: this.$store.getters.getUser.id,
+        };
+
+        // if 1 then call deposit function else call withdraw
+        if (activitieType === 1) {
+          IncrementCustomerBalance({
+            customerId: customerId * 1,
+            customerAmount: amount * 1,
+          });
+
+          await depositAccount(depositData);
+
+          this.$toasted.success("تم حذف العملية بنجاح", {
+            position: "top-center",
+            duration: 5000,
+          });
+
+          bus.$emit("deposit");
+          await DeleteActivity(activitieId * 1);
+        } else {
+          DecrementCustomerBalance({
+            customerId: customerId * 1,
+            customerAmount: amount * 1,
+          });
+
+          withdrawAccount(withdrawData);
+
+          this.$toasted.success("تم حذف العملية بنجاح", {
+            position: "top-center",
+            duration: 5000,
+          });
+
+          bus.$emit("withdraw");
+          await DeleteActivity(activitieId * 1);
+        }
       }
 
       this.getActivities();
+      this.getCustomerById();
     },
   },
 
   mounted() {
     this.getActivities();
-    this.getCustomer();
     this.getAccounts();
+    this.getCustomerById();
 
     this.customerTrans.idCustomer = this.$route.params.id;
 
@@ -473,5 +433,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

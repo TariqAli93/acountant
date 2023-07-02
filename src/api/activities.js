@@ -21,6 +21,7 @@ export const GetActivities = () => {
         'account.isDeleted',
       )
       .where('activities.isDeleted', '=', 0)
+      .where('activities.activitieStatus', '=', 1)
       .then((data) => {
         const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
         console.log(sortedData)
@@ -101,6 +102,7 @@ export const GetActivitiesByCustomer = (id) => {
         'activities.activitieType',
         'activities.activitieBy',
         'activities.amount',
+        'activities.activitieStatus',
         'activities.note',
         'activities.createdAt',
         'activities.customerId',
