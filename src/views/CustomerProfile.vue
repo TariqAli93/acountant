@@ -52,7 +52,8 @@
       <v-divider />
 
       <v-container>
-        <v-form ref="customerFormRef" v-model="customerTrans.valid" lazy-validation @submit.prevent="customerTransaction">
+        <v-form ref="customerFormRef" v-model="customerTrans.valid" validate-on="submit lazy"
+          @submit.prevent="customerTransaction">
           <v-row>
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
               <v-text-field outlined color="secondary" label="المبلغ" placeholder="المبلغ" :rules="rules"
@@ -104,7 +105,8 @@
             </v-col>
           </v-row>
 
-          <v-btn large color="success" type="submit"> اضافة الكشف </v-btn>
+          <v-btn large color="success" type="submit" :disabled="customerTrans.valid != true"
+            :loading="customerTrans.loading"> اضافة الكشف </v-btn>
         </v-form>
       </v-container>
     </v-card>
@@ -206,6 +208,7 @@ export default {
       accountId: null,
       createdAt: new Date().toISOString().split("T")[0],
       valid: false,
+      loading: false,
     },
     headers: [
       { text: "رقم الحركة", value: "activitieId" },
@@ -242,6 +245,11 @@ export default {
       const amount = this.customerAmount !== undefined ? this.customerAmount * 1 : 0;
       return amount < 0 ? `مطلوب ${amount}` : `يطلب ${amount}`;
     },
+
+    isDisabled() {
+      // evaluate whatever you need to determine disabled here...
+      return this.$refs.customerFormRef.validate();
+    }
   },
 
   methods: {
@@ -282,6 +290,7 @@ export default {
     },
 
     async customerTransaction() {
+      this.customerTrans.loading = true;
       try {
         if (this.$refs.customerFormRef.validate()) {
           const activitiesData = {
@@ -303,18 +312,36 @@ export default {
               customerId: this.$route.params.id,
               customerAmount: this.customerTrans.amount * 1,
             });
+
+            setTimeout(() => {
+
+              this.customerTrans.loading = false;
+            }, 3000)
           } else {
             await IncrementCustomerBalance({
               customerId: this.$route.params.id,
               customerAmount: this.customerTrans.amount * 1,
             });
+
+            setTimeout(() => {
+
+              this.customerTrans.loading = false;
+            }, 3000)
           }
 
           this.getActivities();
           this.getCustomerById();
+          setTimeout(() => {
+
+            this.customerTrans.amount = "";
+            this.customerTrans.activitieBy = "";
+            this.customerTrans.loading = false;
+          }, 3000)
+
         }
       } catch (error) {
         console.error(error);
+        this.customerTrans.loading = false;
       }
     },
 
